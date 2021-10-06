@@ -32,8 +32,8 @@ require_relative './http_fetcher.rb'
 def parse_hiscores_page()
   doc = Nokogiri::HTML(fetch_hiscores_page(@group_name))
   group_hiscores_map = extract_group_hiscores(doc)
-  puts(group_hiscores_map)
   individual_hiscores_map = extract_individual_hiscores(doc)
+  [group_hiscores_map, individual_hiscores_map]
 end
 
 # Input is the entire page CSS

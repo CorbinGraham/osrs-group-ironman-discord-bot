@@ -1,19 +1,28 @@
-# require 'discordrb'
+require 'discordrb'
+require_relative './hiscores_parser.rb'
 
 API_KEY = '<token here>'
-@last_update_time = Time.now() - 5
+TIMEOUT_SECONDS = 300
 
-# bot = Discordrb::Bot.new token: API_KEY
+@last_update_time = Time.now() - TIMEOUT_SECONDS
+@data = nil
 
-# bot.message(with_text: '!update') do |event|
-#  event.respond 
+bot = Discordrb::Bot.new token: API_KEY
+
+bot.message(with_text: '!update') do |event|
+    time_span = Time.now() - @last_update_time
+    if (time_span) < TIMEOUT_SECONDS
+        event.respond("Hold up! Wait #{TIMEOUT_SECONDS - time_span} more seconds...")
+    else
+        event.respond("Updating...")
+        parse_hiscores_page()
+        @last_update_time = Time.now()
 # end
 
 while true
-    gets
     time_span = Time.now() - @last_update_time
-    if (time_span) < 5
-        puts("Hold up! Wait #{time_span} more seconds...")
+    if (time_span) < TIMEOUT_SECONDS
+        puts("Hold up! Wait #{TIMEOUT_SECONDS - time_span} more seconds...")
     else
         puts("updating...")
         @last_update_time = Time.now()
