@@ -58,8 +58,6 @@ def extract_group_hiscores(doc)
     end
   end
   group_scores_map
-  require 'pry'
-  binding.pry
 end
 
 def extract_individual_hiscores(doc)
