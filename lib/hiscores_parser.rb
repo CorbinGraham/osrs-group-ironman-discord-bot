@@ -95,5 +95,3 @@ def extract_individual_hiscores(doc)
   end
   individual_scores_map
 end
-
-parse_hiscores_page()
