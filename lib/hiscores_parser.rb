@@ -36,18 +36,30 @@ def parse_hiscores_page()
   [group_hiscores_map, individual_hiscores_map]
 end
 
-# Input is the entire page CSS
-# Output is a map of all of our group hiscores
-# Format is {{"Size"=>"5"}
-#            {"Total level"=>"772"}
-#              ...}
 def extract_group_hiscores(doc)
   group_block = doc.css('dl.um-detail-list')
 
   scores = group_block.css('dd')
-  group_block.css('dt').each_with_index.map { |node, index| {
+  cleaned_scores = group_block.css('dt').each_with_index.map { |node, index| {
     node.text.gsub("Expand","").strip => scores[index].text.strip }
   }
+
+  cleaned_scores.shift
+
+  group_scores_map = {}
+  current_grouping = ""
+  cleaned_scores.each do |score_map|
+    # Checks to see if we are looking at a username or at a hiscore
+    if @accepted_skills.include?(score_map.keys[0])
+      group_scores_map[current_grouping][score_map.keys[0]] = score_map.values[0].delete(',').to_i
+    else
+      current_grouping = score_map.keys[0]
+      group_scores_map[current_grouping] = {"Group_totals" => score_map.values[0].delete(',').to_i }
+    end
+  end
+  group_scores_map
+  require 'pry'
+  binding.pry
 end
 
 def extract_individual_hiscores(doc)
@@ -83,3 +95,5 @@ def extract_individual_hiscores(doc)
   end
   individual_scores_map
 end
+
+parse_hiscores_page()

@@ -1,7 +1,7 @@
 require 'discordrb'
 require_relative './lib/hiscores_parser.rb'
 
-API_KEY = ENV.DISCORD_API_KEY
+API_KEY = ENV['DISCORD_API_KEY']
 TIMEOUT_SECONDS = 300
 GROUP_NAME = 'Pen Boys'
 
