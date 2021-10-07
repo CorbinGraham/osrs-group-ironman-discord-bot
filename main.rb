@@ -7,7 +7,8 @@ GROUP_NAME = 'Pen Boys'
 
 @last_update_time = Time.now() - TIMEOUT_SECONDS
 # Map array, [0] is group_map, [1] is player_map
-@data = nil
+@group_map = nil
+@individual_map = nil
 
 bot = Discordrb::Bot.new token: API_KEY
 
@@ -16,28 +17,34 @@ bot.message(with_text: '!update') do |event|
     if (time_span) < TIMEOUT_SECONDS
         event.respond("Hold up! Wait #{TIMEOUT_SECONDS - time_span} more seconds...")
     else
-        @data = parse_hiscores_page()
+        response = parse_hiscores_page()
+        @group_map = response[0]
+        @individual_map = response[1]
         @last_update_time = Time.now()
         event.respond("Updated!")
     end
 end
 
-# bot.message(with_text: '!group') do |event|
-#     response = %{
-#         Group: **#{GROUP_NAME}** Size: *#{@data[0][0]["Size"]}*
-#     }
+bot.message(with_text: '!group') do |event|
+    response = %{
+        Group: **#{GROUP_NAME}**
+    }
 
-#     for ()
+    @group_map.each do |grouping_type, stats|
+      stats.each do |skill, value|
+        response += "\n#{skill}: \t**#{value} XP**"
+      end
+    end
 
-#     event.respond(response)
-# end
+    event.respond(response)
+end
 
 bot.message(with_text: '!contrib') do |event|
-    total_exp = @data[0][25]["Total contribution XP"].delete(",").to_f
+    total_exp = @group_map["Total contribution XP"]["Group_totals"].to_f
 
     response = "\nTotal group xp: **#{total_exp} XP**"
 
-    @data[1].each do |username, stats| 
+    @individual_map.each do |username, stats|
         personal_exp = stats["Account_totals"][1]
         percentage = (personal_exp / total_exp)*100
         puts(personal_exp, total_exp, percentage)
